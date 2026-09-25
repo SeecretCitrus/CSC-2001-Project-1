@@ -13,12 +13,14 @@ public class MainGUI extends JFrame {
 
     // there should be a private member variable named `sessions` :
     // private SomethingOrOther sessions;
+    private Node sessions;
 
     // the constructor for the class. This will initialize
     // the class's member variables:
     public MainGUI() {
         // set sessions to a new empty list:
         // sessions = ...
+        sessions = null;
         setTitle("Employee Mentorship and Inclusion Manager");
         setSize(600, 600);
         // when this frame/window closes, halt the whole program:
@@ -108,6 +110,15 @@ public class MainGUI extends JFrame {
             // TO DO: construct a session object, insert it into
             // the list of sessions
 
+            if (Node.searchByID(sessions, id) != null) {
+                outputArea.setText("Session with that ID already exists");
+                return;
+            }
+
+            Session newSession = new Session(id, title, mentor, date, location, maxParticipants);
+
+            sessions = Node.insertSession(sessions, newSession);
+
             outputArea.setText("Session Added Successfully\n");
             // Clear the input fields
             clearFields();
@@ -124,11 +135,22 @@ public class MainGUI extends JFrame {
         // iterate over sessions; display each one
         // to the output window, using the `append`
         // method of the outputArea.
+        if (sessions == null) {
+            outputArea.setText("No sessions exist to display");
+            return;
+        } else {
+            Node current = sessions;
+            while (current != null) {
+                outputArea.append(current.first().toString());
+                // between each one, print a separator line,
+                // as e.g.
+                outputArea.append("\n--------------------\n");
+                current = current.rest();
 
-        // between each one, print a separator line,
-        // as e.g.
+            }
+        }
 
-        outputArea.append("\n--------------------\n");
+
     }
 
     // search by ID if presesnt, mentor otherwise, display results
@@ -143,6 +165,12 @@ public class MainGUI extends JFrame {
             else
                 outputArea.setText("Session not found.");
              */
+            Session result = Node.searchByID(sessions, id);
+            if (result != null) {
+                outputArea.setText(result.toString());
+            } else {
+                outputArea.setText("Session not found");
+            }
         }
         // Otherwise, search by mentor if the Mentor field is not empty
         else if (!mentorField.getText().trim().isEmpty()) {
@@ -156,6 +184,20 @@ public class MainGUI extends JFrame {
             else
                 outputArea.setText("No session found for mentor: " + mentor);
              */
+            Node result = Node.searchByMentor(sessions, mentor);
+            if (result != null) {
+                outputArea.setText("");
+                Node current = result;
+                while (current != null) {//appends all sessions with given mentor
+                    outputArea.append(current.first().toString());
+                    outputArea.append("\n--------------------\n");
+                    current = current.rest();
+                }
+
+            } else {
+                outputArea.setText("No session found for mentor: " + mentor);
+
+            }
         }
         // Nothing entered
         else {
@@ -169,6 +211,14 @@ public class MainGUI extends JFrame {
         // remove the session, print an error to the outputArea
         // if it's not found
         // ... code here ...
+        Session result = Node.searchByID(sessions, id);
+        if (result == null) {
+            outputArea.setText("Session with given ID could not be found");
+        } else {
+            sessions = Node.removeByID(sessions, id);
+            outputArea.setText("Session was successfuly removed");
+            clearFields();
+        }
     }
 
     // add one to the count of the specified session.
@@ -177,6 +227,16 @@ public class MainGUI extends JFrame {
         int id = Integer.parseInt(idField.getText());
         // increment participants field of session,
         // print success or failure message.
+        Session result = Node.searchByID(sessions, id);
+        if (result == null) {
+            outputArea.setText("Session with given ID could not be found");
+        } else if (result.canAddParticipant()) {
+            result.addParticipant();
+            outputArea.setText("Participant registered successfully");
+            clearFields();
+        } else {
+            outputArea.setText("Desired session is already full");
+        }
     }
 
     public static void main(String[] args) {

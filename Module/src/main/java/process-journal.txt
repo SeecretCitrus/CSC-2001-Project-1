@@ -1,0 +1,17 @@
+20 mins:
+I know I needed to list all the sessions so I made a Node that contains a list of Session objects.
+
+Each Session stores: session will have an ID, a title, a mentor, a date, a location,
+and a count of the current number of participants and the maximum number of participants.
+
+30 mins:
+searchByID & searchByMentor & insertSession & add session button
+
+20 mins:
+displaySessions
+removeByID
+
+
+30 mins:
+register participant
+
